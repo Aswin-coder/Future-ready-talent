@@ -1,0 +1,32 @@
+void readMessage(int messageId, char *payload)
+{
+    double lat_val, lng_val;
+    smartDelay(1000); /* Generate precise delay of 1ms */    
+    lat_val = gps.location.lat(); /* Get latitude data */
+    lng_val = gps.location.lng(); /* Get longtitude data */
+    StaticJsonBuffer<MESSAGE_MAX_LEN> jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["deviceId"] = DEVICE_ID;
+    root["messageId"] = messageId;    
+
+    // NAN is not the valid json, change it to NULL
+    if (std::isnan(lat_val))
+    {
+        root["latitude"] = NULL;
+    }
+    else
+    {
+        root["latitude"] = lat_val;
+
+    }
+
+    if (std::isnan(lng_val))
+    {
+        root["longitude"] = NULL;
+    }
+    else
+    {
+        root["longitude"] = lng_val;
+    }
+    root.printTo(payload, MESSAGE_MAX_LEN);
+}
